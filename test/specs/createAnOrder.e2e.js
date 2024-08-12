@@ -9,6 +9,7 @@ describe('Start an order', () => {
         fromField.setValue('East 2nd Street, 601');
         const toField = await $('#to')
         await toField.setValue('1300 1st St')
+        await expect(await helper.getElementByText(fromField, toField)).toBeExisting();
         await browser.pause(10000);
     })
 })
@@ -23,6 +24,7 @@ describe('Continue an order', () => {
         await toField.setValue('1300 1st St')
             const callATaxiButton = await $('//button[contains(text(), "Call a taxi")]')
         await callATaxiButton.click()
+        await expect(callATaxiModal).toBeExisting();
         await browser.pause(10000);
     })
 })
@@ -54,7 +56,7 @@ describe('Continue an order', () => {
 describe('Continue an order', () => {
     it('should should open payment info modal', async () => {
         await browser.url(`/`);
-        const paymentMethodButton = await $('//button[contains(text(), "Payment method")]');
+        const paymentMethodButton = await $('//button[contains(text(), "Payment method, Cash")]');
         await paymentMethodButton.click();
         await browser.pause(10000);
         
@@ -62,14 +64,10 @@ describe('Continue an order', () => {
         await addCardButton.click();
         await browser.pause(10000);
 
-        const
-        document.querySelector("#number")
-
-
     describe('Create an order', () => {
         it('should add credit card', async () => {
             await browser.url('/');
-             await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+            await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
         
             await browser.pause(2000);
             const overlay = await $('.overlay');
@@ -112,6 +110,7 @@ describe('Continue an order', () => {
         const closeButton = await $('//button[contains(class(), "button.close-button.section-close")]');
         await closeButton.click();
         await browser.pause(10000);
+
         })
     })
     })
@@ -121,6 +120,7 @@ describe('Continue an order', () => {
 describe('Continue an order', () => {
     it('should write message for driver', async () => {
         await browser.url(`/`);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
         const messageToTheDriverButton = await $(page.messageToTheDriverButton);
         await messageToTheDriverButton.waitForDisplayed();
         await messageToTheDriverButton.click();
@@ -130,7 +130,8 @@ describe('Continue an order', () => {
 
     it('should save the message', async () => {
         await browser.url(`/`);
-        const messageToTheDriver = helper.getmessageToTheDriver("Thank you for my ice cream");
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        const messageToTheDriver = helper.getmessageToTheDriver();
         await page.submitmessageToTheDriver(messageToTheDriver);
 
         await expect(await helper.getElementByText(messageToTheDriver)).toBeExisting();
@@ -143,9 +144,9 @@ describe('Continue an order', () => {
 describe('Continue an order', () => {
     it('should order a blanket and handkerchiefs', async () => {
         await browser.url(`/`);
-        await page.fillAddresses(fromAddresses, toAddress);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
         await page.selectSupportive();
-        const blanketButton = await &(page.blankerButton);
+        const blanketButton = await $(page.blankerButton);
         await blanketButton.click();
         await browser.pause(10000);
         await expect(page.BlanketCheck).toBeChecked();
@@ -156,15 +157,17 @@ describe('Continue an order', () => {
 describe('Continue an order', () => {
     it('should add 2 ice creams to order', async () => {
         await browser.url(`/`);
-        await page.fillAddresses(fromAddresses, toAddress);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.selectSupportive();
         const orderRequirementsDropdown = $('#orderRequirements');
         orderRequirementsDropdown.selectByVisibleText('Ice cream bucket');
-        const iceCreamButton = await $(page.iceCreamButton);
+        const plusIceCream = await $(page.iceCreamButton);
+        await iceCreamButton.waitForDisplayed();
         await iceCreamButton.click();
         await browser.pause(10000);
         await iceCreamButton.click();
         await browser.pause(10000);
-        await expect ().toBeDisplayed();
+        await expect(iceCreamButtonvalue).toBe(2);
     })
 })
 
@@ -172,63 +175,13 @@ describe('Continue an order', () => {
 describe('Create an order', () => {
     it('should open the car search modal', async () => {
         await browser.url(`/`);
-  
-        console.log('Filling addresses...');
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.selectSupportive();
-
         const phoneNumber = helper.getPhoneNumber('+1');
-
-        console.log('Submitting phone number...');
         await page.submitPhoneNumber(phoneNumber);
-
-        console.log('Filling card number...');
-        await page.fillCardNumber('123456784321');
-        
-        console.log('Filling CVV number...');
-        await page.fillCvvNumber('12');
-
-        await browser.pause(1000);
-
-        const paymentModal = await $(page.cardPaymentModal);
-        console.log('Waiting for the payment modal to exist...');
-        const modalExists = await paymentModal.waitForExist({ timeout: 15000 });
-        if (!modalExists) {
-            throw new Error('Payment modal does not exist');
-        }
-
-        console.log('Waiting for the payment modal to display...');
-        const modalDisplayed = await paymentModal.waitForDisplayed({ timeout: 15000 });
-        if (!modalDisplayed) {
-            throw new Error('Payment modal is not displayed');
-        }
-        await browser.pause(1000); 
-
-        console.log('Attempting to find the close button...');
-        const closeButtonSection = await paymentModal.$('.section.active');
-        const closeButton = await closeButtonSection.$('.close-button.section-close');
-        console.log('Waiting for the close button to exist...');
-        const buttonExists = await closeButton.waitForExist({ timeout: 15000 });
-        if (!buttonExists) {            throw new Error('Close button does not exist');
-        }
-
-        console.log('Waiting for the close button to display...');
-        const buttonDisplayed = await closeButton.waitForDisplayed({ timeout: 15000 });
-        if (!buttonDisplayed) {
-            throw new Error('Close button is not displayed');
-        }
-
-        console.log('Clicking the close button...');
-        await closeButton.click();
-        await browser.pause(1000);
-
         const orderButton = await $(page.orderButton);
-        console.log('Waiting for the order button to be clickable...');
-        await orderButton.waitForClickable({ timeout: 15000 });
+        // await orderButton.waitForClickable(10000);
         await orderButton.click();
-
         const carSearchModal = await $(page.carSearchModal);
-        console.log('Verifying car search modal exists...');
-        await expect(carSearchModal).toBeExisting();
+        await expect(carSearchModal).toBeDisplayed();
     });
 });
